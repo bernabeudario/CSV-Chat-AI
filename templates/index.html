@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Chat AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="../static/js/scripts.js"></script>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='6' height='24' x='3' y='5' fill='%234e87a0'/%3E%3Crect width='6' height='20' x='13' y='9' fill='%23f65275'/%3E%3Crect width='6' height='16' x='23' y='13' fill='%23f65275'/%3E%3C/svg%3E">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center p-4">
+    <div class="flex w-full max-w-7xl">
+        <!-- Panel izquierdo, oculto por defecto -->
+        <div id="sidePanel" class="h-screen bg-white shadow-lg z-40 transition-all duration-100 ease-in-out flex flex-col fixed left-0 top-0 w-12">
+            <button id="openPanelBtn" onclick="togglePanel()" class="fixed top-4 z-50 w-12 h-12 flex items-center justify-center text-2xl font-bold text-green-600 focus:outline-none">
+            ☰
+            </button>
+            <div id="sidePanelContent" class="hidden w-80 px-4 py-2 flex-1 overflow-y-auto mt-12">
+                <div class="h-5"></div>
+                <div class="flex items-center justify-between border-b pb-2 mb-2">
+                    <span class="font-semibold text-lg">Opciones</span>
+                </div>
+                <p class="text-sm text-gray-600 mb-2">No sabes qué preguntar? Prueba esto:</p>
+                <div class="grid grid-cols-2 gap-2 mb-6">
+                    <button onclick="handleDefaultQuestion(1)" class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 leading-tight">
+                        Sobre mis datos
+                    </button>
+                    <button onclick="handleDefaultQuestion(2)" class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 leading-tight">
+                        Sugerencias de análisis
+                    </button>
+                    <button onclick="handleDefaultQuestion(3)" class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 leading-tight">
+                        HeatMap de interrelación
+                    </button>
+                    <button onclick="handleDefaultQuestion(4)" class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 leading-tight">
+                        Boxplots y outliers
+                    </button>
+                    <button onclick="handleDefaultQuestion(5)" class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 leading-tight">
+                        Scatter Chart analítico
+                    </button>
+                    <button onclick="handleDefaultQuestion(6)" class="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg shadow hover:bg-gray-300 leading-tight">
+                        Distribución normal
+                    </button>
+                </div>
+                <div class="flex flex-col mb-2">
+                    <div class="flex items-center">
+                        <label for="fileInput" class="w-full px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 cursor-pointer text-center">
+                            Seleccionar CSV
+                        </label>
+                        <input type="file" id="fileInput" name="file" accept=".csv" class="hidden" onchange="updateSelectedFileName(this)">
+                    </div>
+                    <div class="flex items-center mt-1">
+                        <button type="button" onclick="clearFile()" class="text-gray-400 hover:text-red-600 text-sm font-bold focus:outline-none" title="Quitar archivo">
+                            &times;
+                        </button>
+                        <span id="selectedFileName" class="ml-3 text-gray-700 text-sm whitespace-nowrap">Ningún archivo seleccionado</span>
+                    </div>
+                </div>
+                <div class="flex flex-col mb-2">
+                    <div class="flex items-center">
+                        <label for="metadataInput" class="w-full px-4 py-2 bg-indigo-500 text-white rounded-lg shadow hover:bg-indigo-600 cursor-pointer text-center">
+                            Seleccionar Metadata (.md)
+                        </label>
+                        <input type="file" id="metadataInput" name="metadataFile" accept=".md" class="hidden" onchange="updateSelectedMetadataName(this)">
+                    </div>
+                    <div class="flex items-center mt-1">
+                        <button type="button" onclick="clearMetadata()" class="text-gray-400 hover:text-red-600 text-sm font-bold focus:outline-none" title="Quitar archivo">
+                            &times;
+                        </button>
+                        <span id="selectedMetadataName" class="ml-3 text-gray-700 text-sm whitespace-nowrap">Metadata no cargada</span>
+                    </div>
+                </div>
+                <div class="h-10"></div>
+                <button id="resetChatBtn"
+                    class="w-full px-4 py-2 bg-violet-600 text-white rounded-lg shadow hover:bg-violet-700"
+                    type="button"
+                    onclick="resetChat()">
+                    Reiniciar chat
+                </button>
+            </div>
+        </div>
+        <!-- Contenido principal, con margen izquierdo dinámico -->
+        <div id="mainContent" class="flex-1 flex flex-col transition-all duration-300 ease-in-out ml-12 h-[95vh]">
+            <div id="chatBox" class="w-full max-w-6xl flex-shrink-0 h-[85%] overflow-y-auto p-4 mb-4"></div>
+            <form id="queryForm" method="POST" enctype="multipart/form-data" class="w-full max-w-6xl flex flex-col flex-grow h-[20%]" onsubmit="handleFormSubmit(event)">
+                <!-- Campo de texto para la consulta -->
+                <div class="flex items-center h-full">
+                    <textarea id="userQuery" name="userQuery" class="flex-1 border border-gray-300 rounded-2xl p-2 shadow-sm h-full resize-none"
+                        placeholder="Escribe tu mensaje y presiona Enter..." required
+                    ></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal para mostrar la imagen en grande -->
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden z-[9999]">
+        <img id="modalImage" src="" alt="Imagen ampliada" class="max-w-full max-h-full rounded-lg shadow-lg">
+        <button onclick="closeModal()" class="absolute top-5 right-10 text-white text-2xl font-bold z-[10000]">&times;</button>
+    </div>
+</body>
+</html>
