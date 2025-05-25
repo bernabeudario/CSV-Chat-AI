@@ -5,7 +5,7 @@ numpy
 pandas
 matplotlib
 seaborn
-ploty
 geopandas
 wordcloud
 scipy
+dotenv

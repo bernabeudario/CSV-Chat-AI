@@ -28,6 +28,9 @@ def run_query():
     global df_input, chat_history
     user_query = request.form.get('userQuery')
     
+    # Crear la carpeta './static/tmp' si no existe
+    os.makedirs('./static/tmp', exist_ok=True)
+
     # Borrar la imagen existente antes de ejecutar el código
     figure_path = './static/tmp/chart.png'
     if os.path.exists(figure_path):
