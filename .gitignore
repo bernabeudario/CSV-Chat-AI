@@ -3,3 +3,9 @@
 
 # Environment Variables
 .env
+
+# Git Files
+.git
+
+# tmp Folder
+/static/tmp
