@@ -1,0 +1,11 @@
+flask
+flask-cors
+openai
+numpy
+pandas
+matplotlib
+seaborn
+ploty
+geopandas
+wordcloud
+scipy
