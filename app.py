@@ -39,7 +39,10 @@ def run_query():
     # Procesar el archivo CSV
     file = request.files.get('file')
     try:
-        df_input = pd.read_csv(io.StringIO(file.stream.read().decode('utf-8')))
+        # Leer el archivo CSV detectando automáticamente el delimitador (coma o punto y coma)
+        content = file.stream.read().decode('utf-8')
+        delimiter = ';' if ';' in content.splitlines()[0] else ','
+        df_input = pd.read_csv(io.StringIO(content), delimiter=delimiter, low_memory=False)
     except Exception as e:
         return jsonify({"response": "Debes cargar un archivo CSV válido antes de realizar una consulta. En el panel izquierdo verás las opciones disponibles!"})
 
