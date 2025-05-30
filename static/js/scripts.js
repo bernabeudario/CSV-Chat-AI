@@ -268,7 +268,7 @@ function resetChat() {
     fetch('/reset-chat', { method: 'POST' })
         .then(response => response.json())
         .then(data => {
-            loadDefaultWelcomeCSVMetadata();
+            loadWelcomeMessage();
         });
 }
 
