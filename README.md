@@ -11,4 +11,4 @@ Los principales componentes de este proyecto son:
       
          
 El funcionamiento y los pasos de instalación se encuentran detallados en el siguiente enlace:
-* DISPONIBLE A PARTIR DEL 2025-06-04
+* [Abrir enlace Medium...](https://medium.com/@dariobernabeu/rag-chat-ai-con-csv-guia-paso-a-paso-1a9dc5f429ad)
